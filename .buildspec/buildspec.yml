@@ -1,46 +1,35 @@
-version: 0.2
+# Change the following to your desired values:
+#   __ACCOUNT_NUMBER__
+#   __ECR_REGION__
+#   __ECR_REPOSITORY_NAME__
+#   __ECS_CONTAINER_NAME__
 
+# Prerequisite
+# After clicking "Create build project" in Codebuild
+#  with the following environmental variables/key pairs
+#  Click Edit > Environment in CodeBuild
+# AWS_DEFAULT_REGION = your current aws default region ie "us-east-1"
+# AWS_ACCOUNT_ID = 12 digit Account ID ie "182675479319"
+# IMAGE_TAG = value "latest"
+# IMAGE_REPO_NAME = name of ECR repo ie d2b.prj.002.ecr.repo.stream
+
+version: 0.2
 phases:
   install:
     runtime-versions:
-      python: 3.10
+      docker: 18
   pre_build:
     commands:
-      - apt-get install -y python3-venv
-      - python3.10 -m venv test_venv
-      - . test_venv/bin/activate
-      - pip install --upgrade pip
-      - pip install .
-      - pip install -r tests/requirements.txt
-      - rm -rf dspt
-      - mkdir test-reports
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
   build:
     commands:
-      - pytest 
-        --html=test-reports/report.html 
-        --self-contained-html
-        -s
-        -v
-        --cov=dspt 
-        --cov-report=html:test-reports/coverage 
-        --junitxml=test-reports/junit.xml 
-        --log-file=test-reports/logs.txt 
-        tests
+      - echo Build started on `date`
+      - echo Building the Docker image...          
+      - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG .
+      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG      
   post_build:
     commands:
       - echo Build completed on `date`
-
-reports:
-  coverage:
-    files:
-      - "coverage/*"
-    base-directory: 'test-reports'
-    discard-paths: yes
-  report:
-    files:
-      - 'junit.xml'
-      - 'report.html'
-      - 'assets/*'
-    base-directory: 'test-reports'
-    discard-paths: yes
-    file-format: JunitXml
+      - echo Pushing the Docker image...
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
