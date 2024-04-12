@@ -1,15 +1,19 @@
-FROM python:3.10.13-alpine
+FROM python:3.8-alpine
+#FROM  public.ecr.aws/docker/library/python:3.10
 
 USER root
+WORKDIR /app/producer
+COPY . .
+
 RUN apk update && apk upgrade --no-cache
 RUN pip3 install --upgrade pip
-WORKDIR /usr/src/app/producer
-COPY ./producer .
-COPY .env .
-COPY requirements.txt .
-RUN chmod +x /usr/src/app/producer/*
 RUN pip3 install --no-cache-dir -r requirements.txt
-#CMD ["python","producer.py"]
+
+RUN chmod +x /app/producer/*
+#EXPOSE 5000
+
 USER 1001
 ENV PYTHONUNBUFFERED 1
-CMD tail -f /dev/null
+
+CMD ["python","./src/producer.py"]
+#CMD tail -f /dev/null
