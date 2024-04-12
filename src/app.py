@@ -75,8 +75,14 @@ def start_process(i:int):
         print("Total ingested:"+str(i) +",ReqID:"+ response['ResponseMetadata']['RequestId'] + ",HTTPStatusCode:"+ str(response['ResponseMetadata']['HTTPStatusCode']))
 
 if __name__=='__main__':
+    # getting tokens from .env file
+    from dotenv import load_dotenv
+    load_dotenv()
+    
+    aws_secret_access_key = os.getenv('aws_secret_access_key')
+
     kdsname='d2b-capstone-kinesis-stream-name'
     region='us-east-1'
     i=0
-    clientkinesis = boto3.client('kinesis',region_name=region, aws_access_key_id=os.environ['ACCESS_KEY'],aws_secret_access_key=os.environ['SECRET_KEY'])
+    clientkinesis = boto3.client('kinesis',region_name=region, aws_access_key_id = os.getenv('aws_access_key_id'),aws_secret_access_key = os.getenv('aws_secret_access_key'))
     start_process(i)
