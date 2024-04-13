@@ -1,9 +1,3 @@
-# Change the following to your desired values:
-#   __ACCOUNT_NUMBER__
-#   __ECR_REGION__
-#   __ECR_REPOSITORY_NAME__
-#   __ECS_CONTAINER_NAME__
-
 # Prerequisite
 # After clicking "Create build project" in Codebuild
 #  with the following environmental variables/key pairs
