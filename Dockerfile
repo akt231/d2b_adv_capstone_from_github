@@ -15,5 +15,5 @@ RUN chmod +x /app/producer/*
 USER 1001
 ENV PYTHONUNBUFFERED 1
 
-CMD ["python","./src/producer.py"]
+CMD ["python3","./src/producer.py"]
 #CMD tail -f /dev/null
