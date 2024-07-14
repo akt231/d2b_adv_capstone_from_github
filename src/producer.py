@@ -1,10 +1,12 @@
 import json
 import boto3
+from botocore.exceptions import ClientError
 import csv
 import datetime
 import random
 import os
 from datetime import timedelta
+
 
 
 def getlatlon():
@@ -32,7 +34,7 @@ def getstore():
 #@JsonPropertyOrder({"id", "vendorId", "pickupDate", "dropoffDate", "passengerCount", "pickupLongitude", "pickupLatitude", "dropoffLongitude", "dropoffLatitude", "storeAndFwdFlag", "gcDistance", 
 #"tripDuration", "googleDistance", "googleDuration"})
 
-def start_process(i:int):
+def start_process(i:int, streamname):
     while True:
         i=int(i)+1
         id='id' + str(random.randint(1665586, 8888888))
@@ -71,18 +73,24 @@ def start_process(i:int):
         new_dict["googleDistance"]=googleDistance
         new_dict["googleDuration"]=googleDuration
         
-        response=clientkinesis.put_record(StreamName=kdsname, Data=json.dumps(new_dict), PartitionKey=id)
+        response=clientkinesis.put_record(StreamName=streamname, Data=json.dumps(new_dict), PartitionKey=id)
         print("Total ingested:"+str(i) +",ReqID:"+ response['ResponseMetadata']['RequestId'] + ",HTTPStatusCode:"+ str(response['ResponseMetadata']['HTTPStatusCode']))
 
 if __name__=='__main__':
-    # getting tokens from .env file
-    from dotenv import load_dotenv
-    load_dotenv()
+    # initialise variables for kinesis use 
     
-    aws_secret_access_key = os.getenv('aws_secret_access_key')
-
+    # create a session
+    # Fetching Credentials dynamically:
+    session = boto3.Session(profile_name='admin@117300478889')  
+    #account details are exposed via config cred file!!!!!!
+    
+    # create a kinesis resource or client
+    # clientkinesis = boto3.client('kinesis',region_name=region, aws_access_key_id=os.environ['ACCESS_KEY'],aws_secret_access_key=os.environ['SECRET_KEY'])
+    clientkinesis = session.client('kinesis') 
+    
+    # name your stream 
     kdsname='d2b-capstone-kinesis-stream-name'
-    region='us-east-1'
+
+    # send data to stream
     i=0
-    clientkinesis = boto3.client('kinesis',region_name=region, aws_access_key_id = os.getenv('aws_access_key_id'),aws_secret_access_key = os.getenv('aws_secret_access_key'))
-    start_process(i)
+    start_process(i, kdsname) 
