@@ -86,7 +86,7 @@ if __name__=='__main__':
     
     # create a kinesis resource or client
     # clientkinesis = boto3.client('kinesis',region_name=region, aws_access_key_id=os.environ['ACCESS_KEY'],aws_secret_access_key=os.environ['SECRET_KEY'])
-    clientkinesis = session.client('kinesis') 
+    clientkinesis = boto3.client('kinesis') 
     
     # name your stream 
     kdsname='d2b-capstone-kinesis-stream-name'
