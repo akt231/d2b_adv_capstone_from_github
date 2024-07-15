@@ -80,8 +80,8 @@ if __name__=='__main__':
     # initialise variables for kinesis use 
     
     # create a session
-    # Fetching Credentials dynamically:
-    session = boto3.Session(profile_name='admin@117300478889')  
+    # Fetching Credentials dynamically locally:
+    # session = boto3.Session(profile_name='admin@117300478889')  
     #account details are exposed via config cred file!!!!!!
     
     # create a kinesis resource or client
