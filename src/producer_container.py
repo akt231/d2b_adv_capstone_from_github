@@ -6,6 +6,8 @@ import datetime
 import random
 import os
 from datetime import timedelta
+import logging
+
 
 
 
@@ -74,19 +76,24 @@ def start_process(i:int, streamname):
         new_dict["googleDuration"]=googleDuration
         
         response=clientkinesis.put_record(StreamName=streamname, Data=json.dumps(new_dict), PartitionKey=id)
-        print("Total ingested:"+str(i) +",ReqID:"+ response['ResponseMetadata']['RequestId'] + ",HTTPStatusCode:"+ str(response['ResponseMetadata']['HTTPStatusCode']))
-
+        logdata = "Total ingested:"+str(i) +",ReqID:"+ response['ResponseMetadata']['RequestId'] + ",HTTPStatusCode:"+ str(response['ResponseMetadata']['HTTPStatusCode'])
+        #print(logdata)
+        logging.info(logdata)
+        
 if __name__=='__main__':
+    # set up logging defaults
+    logging.basicConfig(level=logging.INFO, filename="../../logs/kinesis_log.log",filemode="w")
+    
     # initialise variables for kinesis use 
     
     # create a session
     # Fetching Credentials dynamically:
-    #session = boto3.Session(profile_name='admin@117300478889')  
+    session = boto3.Session(profile_name='admin@117300478889')  
     #account details are exposed via config cred file!!!!!!
     
     # create a kinesis resource or client
     # clientkinesis = boto3.client('kinesis',region_name=region, aws_access_key_id=os.environ['ACCESS_KEY'],aws_secret_access_key=os.environ['SECRET_KEY'])
-    clientkinesis = boto3.client('kinesis') 
+    clientkinesis = session.client('kinesis') 
     
     # name your stream 
     kdsname='d2b-capstone-kinesis-stream-name'

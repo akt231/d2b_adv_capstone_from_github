@@ -81,12 +81,12 @@ if __name__=='__main__':
     
     # create a session
     # Fetching Credentials dynamically:
-    #session = boto3.Session(profile_name='admin@117300478889')  
+    session = boto3.Session(profile_name='admin@117300478889')  
     #account details are exposed via config cred file!!!!!!
     
     # create a kinesis resource or client
     # clientkinesis = boto3.client('kinesis',region_name=region, aws_access_key_id=os.environ['ACCESS_KEY'],aws_secret_access_key=os.environ['SECRET_KEY'])
-    clientkinesis = boto3.client('kinesis') 
+    clientkinesis = session.client('kinesis') 
     
     # name your stream 
     kdsname='d2b-capstone-kinesis-stream-name'

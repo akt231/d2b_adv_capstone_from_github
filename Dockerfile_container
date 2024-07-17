@@ -1,0 +1,65 @@
+FROM python:3.8-alpine
+#FROM  public.ecr.aws/docker/library/python:3.10
+
+# USER root
+WORKDIR /logs
+WORKDIR /app/producer
+COPY . .
+
+RUN apk update && apk upgrade --no-cache && apk add --no-cache bash
+
+RUN pip3 install --upgrade pip
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+RUN chmod +x /app/producer/*
+#EXPOSE 5000
+
+#RUN usermod -u 1000 www-data
+#RUN usermod -G staff www-data
+
+
+RUN chown :1000 /logs
+RUN chmod 775 /logs
+USER 1000
+VOLUME ["~/.aws"]
+
+
+ENV AWS_CONFIG_FILE=~/.aws/config
+ENV AWS_SHARED_CREDENTIALS_FILE=~/.aws/credentials
+ENV PYTHONUNBUFFERED=1
+
+
+CMD ["python3","./src/producer_container.py"]
+#CMD tail -f /dev/null
+
+
+
+# Permission setting for volumes shared between host and container
+# ref: https://medium.com/@nielssj/docker-volumes-and-file-system-permissions-772c1aee23ca
+# check group ID for user akt
+# id -g akt
+
+# check user ID for user akt
+# id -u akt
+
+# set group owner on host directory to group 1024
+# chown :1024 /data/myvolume
+
+# Change permissions on the host directory to give full 
+# access to members of the group (read+write+execute)
+# chmod 775 /data/myvolume
+
+# Ensure all future content in the folder will inherit group ownership
+# chmod g+s /data/myvolume
+
+# Create a user in the Dockerfile which is member of the 1024 group
+# RUN addgroup --gid 1024 mygroup
+# RUN adduser --disabled-password --gecos "" --force-badname --ingroup 1024 myuser 
+# USER myuser
+
+# (Optional) Add your host user to the group allowing you to conveniently work with the directory from your host machine
+# adduser ubuntu 1024
+
+
+# https://code.visualstudio.com/docs/devcontainers/tutorial
+# reference for dev containers

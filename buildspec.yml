@@ -4,8 +4,10 @@
 #  Click Edit > Environment in CodeBuild
 # AWS_DEFAULT_REGION = your current aws default region ie "us-east-1"
 # AWS_ACCOUNT_ID = 12 digit Account ID ie "182675479319"
-# IMAGE_TAG = value "latest"
 # IMAGE_REPO_NAME = name of ECR repo ie d2b_000_ecr_repo
+
+# no need to add the below in the environmental variables of the codebuild project
+# IMAGE_TAG = value "latest"
 # REPOSITORY_URI = full uri of ecr repo ie 182675479319.dkr.ecr.us-east-1.amazonaws.com/d2b_000_ecr_repo
 # please see the following for buildspec file reference: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html
 # this file is used in aws codebuild 
@@ -50,7 +52,7 @@ phases:
       # the name of the container can be obtained from the task definition file json file in ecs
       - echo Writing the image definitions file... 
       # - printf '[{"name":"second_producer-app","imageUri":"%s"}]' "$IMAGE_REPO_NAME" "$REPOSITORY_URI:$IMAGE_TAG" > imagedefinitions.json
-      - printf '[{"name":"second_producer-app","imageUri":"%s"}]' "$REPOSITORY_URI:$IMAGE_TAG" > imagedefinitions.json
+      - printf '[{"name":"producer","imageUri":"%s"}]' "$REPOSITORY_URI:$IMAGE_TAG" > imagedefinitions.json
       - cat imagedefinitions.json
 artifacts:  
   #this lines are required for code deploy/codepipeline stage 
